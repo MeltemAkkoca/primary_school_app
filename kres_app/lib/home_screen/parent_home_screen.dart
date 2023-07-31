@@ -19,6 +19,7 @@ class ParentHomeScreen extends StatefulWidget {
 
 class _ParentHomeScreen extends State<ParentHomeScreen> {
   String? studentClassName;
+  String? studentId;
 
   @override
   void initState() {
@@ -30,9 +31,17 @@ class _ParentHomeScreen extends State<ParentHomeScreen> {
     var dbHelper = DatabaseHelper();
     Students? fetchedStudentClass =
         await dbHelper.getStudentClassNamebyParent(widget.parent);
+    Students? fetchedStudentId =
+        await dbHelper.getStudentIdbyParent(widget.parent);
+
     if (fetchedStudentClass != null) {
       setState(() {
         studentClassName = fetchedStudentClass.className;
+      });
+    }
+    if (fetchedStudentId != null) {
+      setState(() {
+        studentId = fetchedStudentId.studentId;
       });
     }
   }
@@ -409,7 +418,10 @@ class _ParentHomeScreen extends State<ParentHomeScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const FeeScreen(),
+                                    builder: (context) => FeeScreen(
+                                      studentId:
+                                          studentId ?? 'DefaultStudentId',
+                                    ),
                                   ),
                                 );
                               },

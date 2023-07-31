@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-//import '../../food_list_screen/data/food_list_data.dart';
 import '../../models/food_list.dart';
 import '../../models/user_authentication/database_helper.dart';
 import '../../models/user_authentication/teachers.dart';
@@ -62,22 +61,18 @@ class _NewFoodListScreenState extends State<NewFoodListScreen> {
       );
 
       if (widget.foodList != null) {
-        // FoodList güncelleme
         int result = await DatabaseHelper().updateFoodList(foodList);
         if (result != 0) {
-          // Güncelleme başarılı
           DatabaseHelper()
               .loadFoodList(widget.teacher.className); // Verileri yeniden yükle
         } else {
-          // Güncelleme başarısız
           print("Güncelleme işlemi başarısız.");
         }
       } else {
-        // Yeni food list ekleme
         DatabaseHelper().insertFoodList(foodList);
       }
 
-      Navigator.pop(context); // Food List sayfasına dön
+      Navigator.pop(context);
     }
   }
 
@@ -109,95 +104,131 @@ class _NewFoodListScreenState extends State<NewFoodListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.foodList != null
-            ? 'Yemek Listesini Düzenle'
-            : 'Yeni Yemek Listesi Ekle'),
+    return Theme(
+      data: ThemeData(
+        primaryColor: Color.fromARGB(255, 85, 120, 106),
+        hintColor: Color.fromARGB(255, 85, 120, 106),
+        colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: Colors.green,
+        ).copyWith(
+          primary: Color.fromARGB(255, 85, 120, 106),
+          secondary: Color.fromARGB(255, 85, 120, 106),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Color.fromARGB(255, 85, 120, 106),
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Color.fromARGB(255, 85, 120, 106),
+            ),
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            primary: Color.fromARGB(255, 85, 120, 106),
+          ),
+        ),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(20),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: tarihController,
-                decoration: InputDecoration(
-                  labelText: 'Tarih',
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.calendar_today),
-                    onPressed: () => _selectDate(context),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.foodList != null
+              ? 'Yemek Listesini Düzenle'
+              : 'Yeni Yemek Listesi Ekle'),
+        ),
+        body: SingleChildScrollView(
+          padding: EdgeInsets.all(20),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                SizedBox(height: 10),
+                TextFormField(
+                  controller: tarihController,
+                  decoration: InputDecoration(
+                    labelText: 'Tarih',
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.calendar_today),
+                      onPressed: () => _selectDate(context),
+                    ),
                   ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Bu alan boş bırakılamaz';
+                    }
+                    return null;
+                  },
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Bu alan boş bırakılamaz';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: saatController,
-                decoration: InputDecoration(
-                  labelText: 'Saat',
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.access_time),
-                    onPressed: () => _selectTime(context),
+                SizedBox(height: 10),
+                TextFormField(
+                  controller: saatController,
+                  decoration: InputDecoration(
+                    labelText: 'Saat',
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.access_time),
+                      onPressed: () => _selectTime(context),
+                    ),
                   ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Bu alan boş bırakılamaz';
+                    }
+                    return null;
+                  },
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Bu alan boş bırakılamaz';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: food1Controller,
-                decoration: InputDecoration(labelText: 'Food 1:'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Bu alan boş bırakılamaz';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: food2Controller,
-                decoration: InputDecoration(labelText: 'Food 2: '),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Bu alan boş bırakılamaz';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: food3Controller,
-                decoration: InputDecoration(labelText: 'Food 3:'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Bu alan boş bırakılamaz';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: food4Controller,
-                decoration: InputDecoration(labelText: 'Food 4:'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Bu alan boş bırakılamaz';
-                  }
-                  return null;
-                },
-              ),
-              ElevatedButton(
-                onPressed: _saveFoodList,
-                child: Text('Kaydet'),
-              ),
-            ],
+                SizedBox(height: 10),
+                TextFormField(
+                  controller: food1Controller,
+                  decoration: InputDecoration(labelText: 'Yemek 1'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Bu alan boş bırakılamaz';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 10),
+                TextFormField(
+                  controller: food2Controller,
+                  decoration: InputDecoration(labelText: 'Yemek 2'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Bu alan boş bırakılamaz';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 10),
+                TextFormField(
+                  controller: food3Controller,
+                  decoration: InputDecoration(labelText: 'Yemek 3'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Bu alan boş bırakılamaz';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 10),
+                TextFormField(
+                  controller: food4Controller,
+                  decoration: InputDecoration(labelText: 'Yemek 4'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Bu alan boş bırakılamaz';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _saveFoodList,
+                  child: Text('Kaydet'),
+                ),
+              ],
+            ),
           ),
         ),
       ),

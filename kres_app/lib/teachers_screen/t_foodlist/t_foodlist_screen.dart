@@ -46,159 +46,172 @@ class _TeacherFoodListScreenState extends State<TeacherFoodListScreen> {
           ).then((value) => _loadFoodList());
         },
         tooltip: 'Yeni Yemek Listesi Ekle',
-        child: Icon(Icons.add),
+        child: Icon(Icons.add, color: Colors.white),
+        backgroundColor: Color.fromARGB(255, 85, 120, 106),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: FutureBuilder<List<FoodList>>(
-          future: DatabaseHelper().loadFoodList(widget.teacher.className),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else {
-              foodList = snapshot.data!;
-              return ListView.builder(
-                itemCount: foodList.length,
-                itemBuilder: (context, index) {
-                  DateTime date =
-                      DateFormat('dd.MM.yyyy').parse(foodList[index].tarih);
-                  String monthName = DateFormat('MMMM').format(date);
-                  String dayName = DateFormat('EEEE').format(date);
-                  String dayNumber = DateFormat('dd').format(date);
+      body: foodList.isEmpty
+          ? Center(
+              child: Text(
+                'Yemek listesi yok, lütfen bir yemek listesi ekleyin.',
+              ),
+            )
+          : Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: FutureBuilder<List<FoodList>>(
+                future: DatabaseHelper().loadFoodList(widget.teacher.className),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    foodList = snapshot.data!;
+                    return ListView.builder(
+                      itemCount: foodList.length,
+                      itemBuilder: (context, index) {
+                        DateTime date = DateFormat('dd.MM.yyyy')
+                            .parse(foodList[index].tarih);
+                        String monthName = DateFormat('MMMM').format(date);
+                        String dayName = DateFormat('EEEE').format(date);
+                        String dayNumber = DateFormat('dd').format(date);
 
-                  return Container(
-                    margin:
-                        EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-                    padding:
-                        EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-                    width: MediaQuery.of(context).size.width - 16.0,
-                    height: MediaQuery.of(context).size.height / 5,
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 240, 240, 240),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              children: [
-                                Text(
-                                  dayNumber,
-                                  style: TextStyle(
-                                      color: Colors.black87,
-                                      fontSize: 26.0,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                Text(
-                                  monthName,
-                                  style: TextStyle(
-                                      color: Colors.black87,
-                                      fontSize: 13.0,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                                Text(
-                                  dayName,
-                                  style: TextStyle(
-                                      color: Colors.black87,
-                                      fontSize: 13.0,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                Text(
-                                  foodList[index].food1,
-                                  style: TextStyle(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.w300,
-                                      fontSize: 16.0),
-                                ),
-                                Text(
-                                  foodList[index].food2,
-                                  style: TextStyle(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.w300,
-                                      fontSize: 16.0),
-                                ),
-                                Text(
-                                  foodList[index].food3,
-                                  style: TextStyle(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.w300,
-                                      fontSize: 16.0),
-                                ),
-                                Text(
-                                  foodList[index].food4,
-                                  style: TextStyle(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.w300,
-                                      fontSize: 16.0),
-                                ),
-                              ],
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.access_time,
-                                        color: Colors.black87, size: 16.0),
-                                    SizedBox(width: 5),
-                                    Text(
-                                      foodList[index].saat,
-                                      style: TextStyle(
-                                          color: Colors.black87,
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 13.0),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => NewFoodListScreen(
-                                      foodList: foodList[index],
-                                      teacher: widget.teacher,
-                                    ),
+                        return Container(
+                          margin: EdgeInsets.symmetric(
+                              vertical: 4.0, horizontal: 8.0),
+                          padding: EdgeInsets.symmetric(
+                              vertical: 4.0, horizontal: 8.0),
+                          width: MediaQuery.of(context).size.width - 16.0,
+                          height: MediaQuery.of(context).size.height / 5,
+                          decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 240, 240, 240),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    children: [
+                                      Text(
+                                        dayNumber,
+                                        style: TextStyle(
+                                            color: Colors.black87,
+                                            fontSize: 26.0,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                        monthName,
+                                        style: TextStyle(
+                                            color: Colors.black87,
+                                            fontSize: 13.0,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                      Text(
+                                        dayName,
+                                        style: TextStyle(
+                                            color: Colors.black87,
+                                            fontSize: 13.0,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                    ],
                                   ),
-                                ).then((value) => _loadFoodList());
-                              },
-                              icon: Icon(Icons.edit, color: Colors.black87),
-                            ),
-                            IconButton(
-                              onPressed: () async {
-                                await DatabaseHelper()
-                                    .deleteFoodList(foodList[index].id!);
-                                _loadFoodList();
-                              },
-                              icon: Icon(Icons.delete, color: Colors.red),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  );
+                                  Column(
+                                    children: [
+                                      Text(
+                                        foodList[index].food1,
+                                        style: TextStyle(
+                                            color: Colors.black87,
+                                            fontWeight: FontWeight.w300,
+                                            fontSize: 16.0),
+                                      ),
+                                      Text(
+                                        foodList[index].food2,
+                                        style: TextStyle(
+                                            color: Colors.black87,
+                                            fontWeight: FontWeight.w300,
+                                            fontSize: 16.0),
+                                      ),
+                                      Text(
+                                        foodList[index].food3,
+                                        style: TextStyle(
+                                            color: Colors.black87,
+                                            fontWeight: FontWeight.w300,
+                                            fontSize: 16.0),
+                                      ),
+                                      Text(
+                                        foodList[index].food4,
+                                        style: TextStyle(
+                                            color: Colors.black87,
+                                            fontWeight: FontWeight.w300,
+                                            fontSize: 16.0),
+                                      ),
+                                    ],
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.access_time,
+                                              color: Colors.black87,
+                                              size: 16.0),
+                                          SizedBox(width: 5),
+                                          Text(
+                                            foodList[index].saat,
+                                            style: TextStyle(
+                                                color: Colors.black87,
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 13.0),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              NewFoodListScreen(
+                                            foodList: foodList[index],
+                                            teacher: widget.teacher,
+                                          ),
+                                        ),
+                                      ).then((value) => _loadFoodList());
+                                    },
+                                    icon:
+                                        Icon(Icons.edit, color: Colors.black87),
+                                  ),
+                                  IconButton(
+                                    onPressed: () async {
+                                      await DatabaseHelper()
+                                          .deleteFoodList(foodList[index].id!);
+                                      _loadFoodList();
+                                    },
+                                    icon: Icon(Icons.delete, color: Colors.red),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  }
                 },
-              );
-            }
-          },
-        ),
-      ),
+              ),
+            ),
     );
   }
 }

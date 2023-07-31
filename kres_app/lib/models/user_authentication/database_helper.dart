@@ -1,4 +1,5 @@
 //import 'package:meditation_app/models/class.dart';
+import 'package:meditation_app/models/%C3%B6deme.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:io' as io;
@@ -30,7 +31,7 @@ class DatabaseHelper {
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, "theDb");
     var theDb = await openDatabase(path,
-        version: 10, onCreate: _onCreate, onUpgrade: _onUpgrade);
+        version: 15, onCreate: _onCreate, onUpgrade: _onUpgrade);
     return theDb;
   }
 
@@ -41,6 +42,7 @@ class DatabaseHelper {
     await theDb.execute('DROP TABLE IF EXISTS Parents');
     await theDb.execute('DROP TABLE IF EXISTS Etkinlikler');
     await theDb.execute('DROP TABLE IF EXISTS FoodList');
+    await theDb.execute('DROP TABLE IF EXISTS Payment');
 
     // Call _onCreate to recreate the tables
     _onCreate(theDb, newVersion);
@@ -69,14 +71,28 @@ class DatabaseHelper {
         '''CREATE TABLE Etkinlikler( id INTEGER PRIMARY KEY AUTOINCREMENT, eventName TEXT, description TEXT, className TEXT,  startTime TEXT, endTime TEXT, eventStatus TEXT)''');
     await theDb.execute(
         '''CREATE TABLE FoodList( id INTEGER PRIMARY KEY AUTOINCREMENT, className TEXT, tarih TEXT, saat Text, food1 TEXT, food2 TEXT,  food3 TEXT, food4 TEXT)''');
-
-    print("Database was created!");
+    await theDb.execute('''CREATE TABLE Payment(
+          decontNo TEXT PRIMARY KEY,
+          studentId TEXT,
+          payMonth TEXT,
+          payDate TEXT,
+          totalPay TEXT,
+          payStatus TEXT,
+          FOREIGN KEY(studentId) REFERENCES Students(studentId))''');
 
     var res = await theDb
         .rawQuery('SELECT name FROM sqlite_master WHERE type = "table"');
     print("Tables");
     print(res);
 
+    var pay1 = Payment(
+        decontNo: "90871",
+        studentId: "91235421056",
+        payMonth: "Mayıs",
+        payDate: "14 Mayıs 2023",
+        totalPay: "300 tl",
+        payStatus: "Ödendi");
+    await theDb.insert("Payment", pay1.toMap());
     var teacher1 = Teachers(
         userId: "37986278343",
         password: "password1",
@@ -98,6 +114,7 @@ class DatabaseHelper {
     //var class1 = Class(className: "Papatya");
     await theDb.insert("Teachers", teacher1.toMap());
     await theDb.insert("Teachers", teacher2.toMap());
+
     //await theDb.insert("Class", class1.toMap());
 
     var student1 = Students(
@@ -270,5 +287,26 @@ class DatabaseHelper {
     List<Students> studentList =
         result.map((e) => Students.fromMap(e)).toList();
     return studentList;
+  }
+
+  Future<List<Payment>> getPaymentsbyStudent(String studentId) async {
+    var dbClient = await theDb;
+    var result = await dbClient
+        .query('Payment', where: 'studentId = ?', whereArgs: [studentId]);
+    List<Payment> paymentList = result.map((e) => Payment.fromMap(e)).toList();
+    return paymentList;
+  }
+
+  Future<Students?> getStudentIdbyParent(Parents parent) async {
+    var dbClient = await theDb;
+    List<Map> result = await dbClient.rawQuery(
+        'SELECT S.studentId FROM Parents as P JOIN  Students as S ON P.studentId = S.studentId WHERE P.userId = ?',
+        [parent.userId]);
+
+    if (result.length > 0) {
+      return Students.fromMap(result.first as Map<String, dynamic>);
+    }
+
+    return null;
   }
 }

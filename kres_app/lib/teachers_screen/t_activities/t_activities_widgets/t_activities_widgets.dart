@@ -79,74 +79,75 @@ class _NewEventScreenState extends State<NewEventScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-            widget.event != null ? 'Etkinliği Düzenle' : 'Yeni Etkinlik Ekle'),
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(20),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: eventNameController,
-                decoration: InputDecoration(labelText: 'Etkinlik Adı'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Bu alan boş bırakılamaz';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: descriptionController,
-                decoration: InputDecoration(labelText: 'Description '),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Bu alan boş bırakılamaz';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: startTimeController,
-                decoration: InputDecoration(labelText: 'Başlangıç Zamanı'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Bu alan boş bırakılamaz';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: endTimeController,
-                decoration: InputDecoration(labelText: 'Bitiş Zamanı'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Bu alan boş bırakılamaz';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: eventStatusController,
-                decoration: InputDecoration(labelText: 'Etkinlik Durumu'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Bu alan boş bırakılamaz';
-                  }
-                  return null;
-                },
-              ),
-              ElevatedButton(
-                onPressed: _saveEtkinlik,
-                child: Text('Kaydet'),
-              ),
-            ],
+    return Theme(
+      data: ThemeData(
+        primaryColor: Color.fromARGB(255, 85, 120, 106),
+        colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: Colors.green,
+        ).copyWith(secondary: Color.fromARGB(255, 85, 120, 106)),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            primary: Color.fromARGB(255, 85, 120, 106),
           ),
         ),
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Color.fromARGB(255, 85, 120, 106),
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Color.fromARGB(255, 85, 120, 106),
+            ),
+          ),
+        ),
+      ),
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Color.fromARGB(255, 85, 120, 106),
+          title: Text(widget.event != null
+              ? 'Etkinliği Düzenle'
+              : 'Yeni Etkinlik Ekle'),
+        ),
+        body: SingleChildScrollView(
+          padding: EdgeInsets.all(20),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                _buildTextField(eventNameController, 'Etkinlik Adı'),
+                _buildTextField(descriptionController, 'Description'),
+                _buildTextField(startTimeController, 'Başlangıç Zamanı'),
+                _buildTextField(endTimeController, 'Bitiş Zamanı'),
+                _buildTextField(eventStatusController, 'Etkinlik Durumu'),
+                ElevatedButton(
+                  onPressed: _saveEtkinlik,
+                  child: Text('Kaydet'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(TextEditingController controller, String label) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(),
+        ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Bu alan boş bırakılamaz';
+          }
+          return null;
+        },
       ),
     );
   }

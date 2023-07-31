@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meditation_app/fee_screen/fee_screen.dart';
+//import 'package:meditation_app/fee_screen/fee_screen.dart';
 import 'package:meditation_app/message_screen/message_form_screen.dart';
 import 'package:meditation_app/models/user_authentication/teachers.dart';
 import 'package:meditation_app/teachers_screen/t_activities/t_activities_screen.dart';
@@ -387,7 +387,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const FeeScreen(),
+                                    builder: (context) =>
+                                        TeacherAssignmentScreen(
+                                            teacher: widget.teacher),
                                   ),
                                 );
                               },

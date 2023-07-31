@@ -49,7 +49,8 @@ class _TeacherAssignmentScreenState extends State<TeacherAssignmentScreen> {
           ).then((value) => _loadEtkinlikler());
         },
         tooltip: 'Yeni Etkinlik Ekle',
-        child: Icon(Icons.add),
+        child: Icon(Icons.add, color: Colors.white),
+        backgroundColor: Color.fromARGB(255, 85, 120, 106),
       ),
       body: etkinlikler.isEmpty
           ? Center(child: Text('Etkinlik yok, lütfen bir etkinlik ekleyin.'))
