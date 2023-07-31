@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:meditation_app/home_screen/home_screen.dart';
+import 'package:meditation_app/models/user_authentication/database_helper.dart';
+import 'package:meditation_app/models/user_authentication/users.dart';
+import 'package:meditation_app/models/user_authentication/teachers.dart';
+
+import '../home_screen/parent_home_screen.dart';
+import '../models/user_authentication/parents.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -9,6 +15,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,6 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       horizontal: 10,
                     ),
                     child: TextFormField(
+                      controller: _usernameController,
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         hintText: "Username",
@@ -79,6 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     child: TextFormField(
                       obscureText: true,
+                      controller: _passwordController,
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         hintText: "Password",
@@ -115,13 +125,40 @@ class _LoginScreenState extends State<LoginScreen> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const HomeScreen(),
-                    ),
-                  );
+                onPressed: () async {
+                  String username = _usernameController.text;
+                  String password = _passwordController.text;
+
+                  DatabaseHelper dbHelper = DatabaseHelper();
+                  User? user = await dbHelper.getUser(username, password);
+
+                  if (user == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('Username or password incorrect')));
+                    return;
+                  }
+                  if (user.userRole == 'teacher') {
+                    Teachers? teacher = await dbHelper.getTeacher(user);
+                    if (teacher != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HomeScreen(teacher: teacher),
+                        ),
+                      );
+                    }
+                  } else if (user.userRole == 'parent') {
+                    Parents? parent = await dbHelper.getParent(user);
+                    if (parent != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ParentHomeScreen(parent: parent),
+                        ),
+                      );
+                    }
+                  }
                 },
                 child: const Padding(
                   padding: EdgeInsets.symmetric(

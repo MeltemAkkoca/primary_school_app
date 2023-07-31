@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:meditation_app/screens/started_screen/get_started_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {

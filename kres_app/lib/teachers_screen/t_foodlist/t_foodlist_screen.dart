@@ -1,149 +1,161 @@
 import 'package:flutter/material.dart';
-import 'package:meditation_app/food_list_screen/data/food_list_data.dart';
+import 'package:intl/intl.dart';
+import 'package:meditation_app/models/food_list.dart';
+import 'package:meditation_app/models/user_authentication/database_helper.dart';
+import 'package:meditation_app/models/user_authentication/teachers.dart';
 import 'package:meditation_app/teachers_screen/t_foodlist/saved_data_screen.dart';
 
-class TeacherFoodListScreen extends StatelessWidget {
-  const TeacherFoodListScreen({Key? key}) : super(key: key);
+class TeacherFoodListScreen extends StatefulWidget {
+  final Teachers teacher;
+
+  const TeacherFoodListScreen({Key? key, required this.teacher})
+      : super(key: key);
+
+  @override
+  _TeacherFoodListScreenState createState() => _TeacherFoodListScreenState();
+}
+
+class _TeacherFoodListScreenState extends State<TeacherFoodListScreen> {
+  List<FoodList> foodList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFoodList();
+  }
+
+  Future<void> _loadFoodList() async {
+    foodList = await DatabaseHelper().loadFoodList(widget.teacher.className);
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Yemek Listesi'),
-        backgroundColor: Color.fromARGB(255, 43, 117, 88),
+        backgroundColor: Color.fromARGB(255, 85, 120, 106),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Color.fromARGB(255, 246, 246, 246),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
-              ),
-              child: ListView.builder(
-                itemCount: foodlist.length,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NewFoodListScreen(teacher: widget.teacher),
+            ),
+          ).then((value) => _loadFoodList());
+        },
+        tooltip: 'Yeni Yemek Listesi Ekle',
+        child: Icon(Icons.add),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: FutureBuilder<List<FoodList>>(
+          future: DatabaseHelper().loadFoodList(widget.teacher.className),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              foodList = snapshot.data!;
+              return ListView.builder(
+                itemCount: foodList.length,
                 itemBuilder: (context, index) {
+                  DateTime date =
+                      DateFormat('dd.MM.yyyy').parse(foodList[index].tarih);
+                  String monthName = DateFormat('MMMM').format(date);
+                  String dayName = DateFormat('EEEE').format(date);
+                  String dayNumber = DateFormat('dd').format(date);
+
                   return Container(
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    margin:
+                        EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                    width: MediaQuery.of(context).size.width - 16.0,
+                    height: MediaQuery.of(context).size.height / 5,
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 240, 240, 240),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Divider(thickness: 1.0),
-                        //first need a row,then 3 columns
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            //first column
                             Column(
                               children: [
                                 Text(
-                                  foodlist[index].date.toString(),
+                                  dayNumber,
                                   style: TextStyle(
-                                    color: Colors.black87,
-                                    fontSize: 26.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                      color: Colors.black87,
+                                      fontSize: 26.0,
+                                      fontWeight: FontWeight.bold),
                                 ),
-                                SizedBox(height: 4),
-                                // Adding spacing between date and monthName
                                 Text(
-                                  foodlist[index].monthName,
+                                  monthName,
                                   style: TextStyle(
-                                    color: Colors.black87,
-                                    fontSize: 13.0,
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                                      color: Colors.black87,
+                                      fontSize: 13.0,
+                                      fontWeight: FontWeight.w500),
                                 ),
-                                SizedBox(height: 4),
-                                // Adding spacing between monthName and dayName
                                 Text(
-                                  foodlist[index].dayName,
+                                  dayName,
                                   style: TextStyle(
-                                    color: Colors.black87,
-                                    fontSize: 13.0,
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                                      color: Colors.black87,
+                                      fontSize: 13.0,
+                                      fontWeight: FontWeight.w500),
                                 ),
                               ],
                             ),
-                            SizedBox(
-                                width:
-                                    20), // Adding spacing between the columns
-                            //second column
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  TextField(
-                                    decoration: InputDecoration(
-                                      labelText: 'Food 1',
-                                    ),
-                                    style: TextStyle(
+                            Column(
+                              children: [
+                                Text(
+                                  foodList[index].food1,
+                                  style: TextStyle(
                                       color: Colors.black87,
                                       fontWeight: FontWeight.w300,
-                                      fontSize: 16.0,
-                                    ),
-                                  ),
-                                  TextField(
-                                    decoration: InputDecoration(
-                                      labelText: 'Food 2',
-                                    ),
-                                    style: TextStyle(
+                                      fontSize: 16.0),
+                                ),
+                                Text(
+                                  foodList[index].food2,
+                                  style: TextStyle(
                                       color: Colors.black87,
                                       fontWeight: FontWeight.w300,
-                                      fontSize: 16.0,
-                                    ),
-                                  ),
-                                  TextField(
-                                    decoration: InputDecoration(
-                                      labelText: 'Food 3',
-                                    ),
-                                    style: TextStyle(
+                                      fontSize: 16.0),
+                                ),
+                                Text(
+                                  foodList[index].food3,
+                                  style: TextStyle(
                                       color: Colors.black87,
                                       fontWeight: FontWeight.w300,
-                                      fontSize: 16.0,
-                                    ),
-                                  ),
-                                  TextField(
-                                    decoration: InputDecoration(
-                                      labelText: 'Food 4',
-                                    ),
-                                    style: TextStyle(
+                                      fontSize: 16.0),
+                                ),
+                                Text(
+                                  foodList[index].food4,
+                                  style: TextStyle(
                                       color: Colors.black87,
                                       fontWeight: FontWeight.w300,
-                                      fontSize: 16.0,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                      fontSize: 16.0),
+                                ),
+                              ],
                             ),
-                            SizedBox(
-                                width:
-                                    20), // Adding spacing between the columns
-                            //3. column
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                // Saat ikonunu içeren Row
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(
-                                      Icons.access_time,
-                                      color: Colors.black87,
-                                      size: 16.0,
-                                    ),
+                                    Icon(Icons.access_time,
+                                        color: Colors.black87, size: 16.0),
                                     SizedBox(width: 5),
                                     Text(
-                                      foodlist[index].time,
+                                      foodList[index].saat,
                                       style: TextStyle(
-                                        color: Colors.black87,
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 13.0,
-                                      ),
+                                          color: Colors.black87,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 13.0),
                                     ),
                                   ],
                                 ),
@@ -151,37 +163,40 @@ class TeacherFoodListScreen extends StatelessWidget {
                             ),
                           ],
                         ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => NewFoodListScreen(
+                                      foodList: foodList[index],
+                                      teacher: widget.teacher,
+                                    ),
+                                  ),
+                                ).then((value) => _loadFoodList());
+                              },
+                              icon: Icon(Icons.edit, color: Colors.black87),
+                            ),
+                            IconButton(
+                              onPressed: () async {
+                                await DatabaseHelper()
+                                    .deleteFoodList(foodList[index].id!);
+                                _loadFoodList();
+                              },
+                              icon: Icon(Icons.delete, color: Colors.red),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   );
                 },
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: () {
-                _navigateToSavedDataScreen(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    Color.fromARGB(255, 10, 89, 37), // Change the color to blue
-              ),
-              child: Text('Kaydet'),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _navigateToSavedDataScreen(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SavedDataScreen(
-          foodList: foodlist,
+              );
+            }
+          },
         ),
       ),
     );

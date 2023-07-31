@@ -1,21 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:meditation_app/fee_screen/fee_screen.dart';
+import 'package:meditation_app/endofday_screen/endofday_screen.dart';
 import 'package:meditation_app/message_screen/message_form_screen.dart';
-import 'package:meditation_app/models/user_authentication/teachers.dart';
-import 'package:meditation_app/teachers_screen/t_activities/t_activities_screen.dart';
-import 'package:meditation_app/teachers_screen/t_foodlist/t_foodlist_screen.dart';
-import '../teachers_screen/t_endofday/t_endofday_screen.dart';
+import 'package:meditation_app/models/students.dart';
+import '../activities_screen/activities_screen.dart';
+import '../fee_screen/fee_screen.dart';
+import '../food_list_screen/food_list.dart';
+import '../models/user_authentication/parents.dart';
+import 'package:meditation_app/models/user_authentication/database_helper.dart';
 
-class HomeScreen extends StatefulWidget {
-  final Teachers teacher;
+class ParentHomeScreen extends StatefulWidget {
+  final Parents parent;
 
-  HomeScreen({Key? key, required this.teacher}) : super(key: key);
+  ParentHomeScreen({Key? key, required this.parent}) : super(key: key);
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _ParentHomeScreen createState() => _ParentHomeScreen();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _ParentHomeScreen extends State<ParentHomeScreen> {
+  String? studentClassName;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    var dbHelper = DatabaseHelper();
+    Students? fetchedStudentClass =
+        await dbHelper.getStudentClassNamebyParent(widget.parent);
+    if (fetchedStudentClass != null) {
+      setState(() {
+        studentClassName = fetchedStudentClass.className;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     color: Color.fromARGB(255, 244, 245, 244)),
                           ),
                           Text(
-                            ' ${widget.teacher.userName}!',
+                            ' ${widget.parent.userName}!',
                             style: Theme.of(context)
                                 .textTheme
                                 .titleMedium!
@@ -62,7 +83,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       SizedBox(
                         height: 20,
                       ),
-                      //if (User is Teachers)
                       Container(
                         width: 130,
                         height: 30,
@@ -71,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             borderRadius: BorderRadius.circular(20)),
                         child: Center(
                           child: Text(
-                            '${widget.teacher.className}',
+                            studentClassName ?? 'Gelmedi',
                             style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
@@ -178,9 +198,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        TeacherAssignmentScreen(
-                                            teacher: widget.teacher),
+                                    builder: (context) => AssignmentScreen(
+                                      studentClassName: studentClassName ??
+                                          'DefaultClassName',
+                                    ),
                                   ),
                                 );
                               },
@@ -235,8 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => TeacherEndOfDay(
-                                        teacher: widget.teacher),
+                                    builder: (context) => const EndOfDay(),
                                   ),
                                 );
                               },
@@ -291,8 +311,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => TeacherFoodListScreen(
-                                        teacher: widget.teacher),
+                                    builder: (context) => FoodListScreen(
+                                      studentClassName: studentClassName ??
+                                          'DefaultClassName',
+                                    ),
                                   ),
                                 );
                               },

@@ -1,134 +1,162 @@
 import 'package:flutter/material.dart';
-import 'package:meditation_app/food_list_screen/data/food_list_data.dart';
+import 'package:meditation_app/models/user_authentication/database_helper.dart';
+import 'package:intl/intl.dart';
+import '../models/food_list.dart';
 
 class FoodListScreen extends StatelessWidget {
-  const FoodListScreen({Key? key}) : super(key: key);
+  final String studentClassName;
+
+  const FoodListScreen({Key? key, required this.studentClassName})
+      : super(key: key);
+
+  static String routeName = 'FoodListScreen';
+
+  bool isValidDate(String input) {
+    try {
+      DateFormat('dd.MM.yyyy').parse(input);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text('Yemek Listesi'),
-          backgroundColor: Color.fromARGB(255, 43, 117, 88),
+          backgroundColor: Color.fromARGB(255, 85, 120, 106),
         ),
-        body: Column(
-          children: [
-            Expanded(
-                child: Container(
-                    decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 246, 246, 246),
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20))),
-                    child: ListView.builder(
-                        itemCount: foodlist.length,
-                        itemBuilder: (context, index) {
-                          return Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height / 8,
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  height: 20,
-                                  child: Divider(thickness: 1.0),
-                                ),
-                                //first need a row,then 3 columns
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    //first column
-                                    Column(children: [
-                                      Text(
-                                        foodlist[index].date.toString(),
-                                        style: TextStyle(
-                                            color: Colors.black87,
-                                            fontSize: 26.0,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      Text(
-                                        foodlist[index].monthName,
-                                        style: TextStyle(
-                                            color: Colors.black87,
-                                            fontSize: 13.0,
-                                            fontWeight: FontWeight.w500),
-                                      ),
-                                      Text(
-                                        foodlist[index].dayName,
-                                        style: TextStyle(
-                                            color: Colors.black87,
-                                            fontSize: 13.0,
-                                            fontWeight: FontWeight.w500),
-                                      )
-                                    ]),
-                                    //second column
-                                    Column(
-                                      children: [
-                                        Text(
-                                          foodlist[index].food1,
-                                          style: TextStyle(
-                                              color: Colors.black87,
-                                              fontWeight: FontWeight.w300,
-                                              fontSize: 16.0),
-                                        ),
-                                        Text(
-                                          foodlist[index].food2,
-                                          style: TextStyle(
-                                              color: Colors.black87,
-                                              fontWeight: FontWeight.w300,
-                                              fontSize: 16.0),
-                                        ),
-                                        Text(
-                                          foodlist[index].food3,
-                                          style: TextStyle(
-                                              color: Colors.black87,
-                                              fontWeight: FontWeight.w300,
-                                              fontSize: 16.0),
-                                        ),
-                                        Text(
-                                          foodlist[index].food4,
-                                          style: TextStyle(
-                                              color: Colors.black87,
-                                              fontWeight: FontWeight.w300,
-                                              fontSize: 16.0),
-                                        ),
-                                      ],
-                                    ),
-                                    //3. column
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        // Saat ikonunu içeren Row
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(Icons.access_time,
+        body: FutureBuilder<List<FoodList>>(
+          future: DatabaseHelper().loadFoodList(studentClassName),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              List<FoodList> foodList = snapshot.data!;
+              return Column(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 246, 246, 246),
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20))),
+                      child: ListView.builder(
+                          itemCount: foodList.length,
+                          itemBuilder: (context, index) {
+                            String dateStr = foodList[index].tarih;
+                            if (!isValidDate(dateStr)) {
+                              return Text(
+                                  'Tarih uygun formatta değil: $dateStr. Lütfen uygun bir formata dönüştürün.');
+                            }
+                            DateTime date =
+                                DateFormat('dd.MM.yyyy').parse(dateStr);
+                            String monthName = DateFormat('MMMM').format(date);
+                            String dayName = DateFormat('EEEE').format(date);
+                            String dayNumber = DateFormat('dd').format(date);
+
+                            return Container(
+                              margin: EdgeInsets.symmetric(vertical: 5),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 20),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Column(
+                                children: [
+                                  Divider(thickness: 1.0),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Column(children: [
+                                        Text(dayNumber,
+                                            style: TextStyle(
                                                 color: Colors.black87,
-                                                size: 16.0),
-                                            SizedBox(
-                                                width:
-                                                    5), // İkon ile metin arasında boşluk için
-                                            Text(
-                                              foodlist[index].time,
-                                              style: TextStyle(
+                                                fontSize: 26.0,
+                                                fontWeight: FontWeight.bold)),
+                                        Text(monthName,
+                                            style: TextStyle(
                                                 color: Colors.black87,
-                                                fontWeight: FontWeight.w500,
                                                 fontSize: 13.0,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        })))
-          ],
+                                                fontWeight: FontWeight.w500)),
+                                        Text(dayName,
+                                            style: TextStyle(
+                                                color: Colors.black87,
+                                                fontSize: 13.0,
+                                                fontWeight: FontWeight.w500)),
+                                      ]),
+                                      Column(
+                                        children: [
+                                          Text(
+                                            foodList[index].food1,
+                                            style: TextStyle(
+                                                color: Colors.black87,
+                                                fontWeight: FontWeight.w300,
+                                                fontSize: 16.0),
+                                          ),
+                                          Text(
+                                            foodList[index].food2,
+                                            style: TextStyle(
+                                                color: Colors.black87,
+                                                fontWeight: FontWeight.w300,
+                                                fontSize: 16.0),
+                                          ),
+                                          Text(
+                                            foodList[index].food3,
+                                            style: TextStyle(
+                                                color: Colors.black87,
+                                                fontWeight: FontWeight.w300,
+                                                fontSize: 16.0),
+                                          ),
+                                          Text(
+                                            foodList[index].food4,
+                                            style: TextStyle(
+                                                color: Colors.black87,
+                                                fontWeight: FontWeight.w300,
+                                                fontSize: 16.0),
+                                          ),
+                                        ],
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(Icons.access_time,
+                                                  color: Colors.black87,
+                                                  size: 16.0),
+                                              SizedBox(width: 5),
+                                              Text(foodList[index].saat,
+                                                  style: TextStyle(
+                                                    color: Colors.black87,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 13.0,
+                                                  )),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                    ),
+                  ),
+                ],
+              );
+            }
+          },
         ));
   }
 }
