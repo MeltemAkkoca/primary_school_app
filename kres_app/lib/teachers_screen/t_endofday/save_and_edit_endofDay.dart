@@ -22,6 +22,7 @@ class _NewEventScreenState extends State<NewEventScreen> {
   String lunch = 'iyi';
   String sleep = 'iyi';
   final List<String> mealOptions = ['iyi', 'orta', 'kötü'];
+  bool isEditing = false;
 
   @override
   void initState() {
@@ -29,6 +30,7 @@ class _NewEventScreenState extends State<NewEventScreen> {
     loadStudents();
 
     if (widget.endOfDay != null) {
+      isEditing = true;
       breakfast = widget.endOfDay!.breakfast;
       lunch = widget.endOfDay!.lunch;
       sleep = widget.endOfDay!.sleep;
@@ -66,43 +68,12 @@ class _NewEventScreenState extends State<NewEventScreen> {
     }
   }
 
-  Widget _buildDropdownField(
-      String label, String value, Function(String?) onChanged) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: DropdownButtonFormField<String>(
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(),
-          fillColor: Color.fromARGB(255, 43, 117, 88),
-          focusColor: Color.fromARGB(255, 43, 117, 88),
-          hoverColor: Color.fromARGB(255, 43, 117, 88),
-        ),
-        value: value,
-        onChanged: onChanged,
-        items: mealOptions.map<DropdownMenuItem<String>>(
-          (String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          },
-        ).toList(),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Bu alan boş bırakılamaz';
-          }
-          return null;
-        },
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Theme(
       data: ThemeData(
         primaryColor: Color.fromARGB(255, 43, 117, 88),
+        hintColor: Color.fromARGB(255, 43, 117, 88),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       child: Scaffold(
@@ -118,7 +89,7 @@ class _NewEventScreenState extends State<NewEventScreen> {
             key: _formKey,
             child: Column(
               children: [
-                if (selectedStudent != null)
+                if (isEditing && selectedStudent != null)
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Text(
@@ -130,11 +101,15 @@ class _NewEventScreenState extends State<NewEventScreen> {
                           color: Color.fromARGB(255, 43, 117, 88)),
                     ),
                   ),
-                if (selectedStudent == null && widget.endOfDay == null)
+                if (!isEditing ||
+                    (selectedStudent == null && widget.endOfDay == null))
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: DropdownButtonFormField<Students>(
-                      hint: Text('Öğrenci seçiniz'),
+                      hint: Text('Öğrenci seçiniz',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: Color.fromARGB(255, 43, 117, 88))),
                       value: selectedStudent,
                       onChanged: (Students? newValue) {
                         setState(() {
@@ -179,11 +154,56 @@ class _NewEventScreenState extends State<NewEventScreen> {
                   style: ElevatedButton.styleFrom(
                     primary: Color.fromARGB(255, 43, 117, 88),
                   ),
-                ),
+                )
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildDropdownField(
+      String label, String value, Function(String?) onChanged) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: DropdownButtonFormField<String>(
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(
+              color: Color.fromARGB(255, 43, 117, 88)), // İstenilen renk kodu
+          border: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Color.fromARGB(255, 43, 117, 88), // İstenilen renk kodu
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Color.fromARGB(255, 43, 117, 88), // İstenilen renk kodu
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Color.fromARGB(255, 43, 117, 88), // İstenilen renk kodu
+            ),
+          ),
+        ),
+        value: value,
+        onChanged: onChanged,
+        items: mealOptions.map<DropdownMenuItem<String>>(
+          (String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value),
+            );
+          },
+        ).toList(),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Bu alan boş bırakılamaz';
+          }
+          return null;
+        },
       ),
     );
   }

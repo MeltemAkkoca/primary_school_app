@@ -76,6 +76,33 @@ class _NewFoodListScreenState extends State<NewFoodListScreen> {
     }
   }
 
+  Widget _buildTextField(TextEditingController controller, String label,
+      {VoidCallback? onTap}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(),
+          suffixIcon: onTap != null
+              ? IconButton(
+                  icon: Icon(label == 'Tarih'
+                      ? Icons.calendar_today
+                      : Icons.access_time),
+                  onPressed: onTap)
+              : null,
+        ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Bu alan boş bırakılamaz';
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
   _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -131,6 +158,9 @@ class _NewFoodListScreenState extends State<NewFoodListScreen> {
             primary: Color.fromARGB(255, 43, 117, 88),
           ),
         ),
+        appBarTheme: AppBarTheme(
+          backgroundColor: Color.fromARGB(255, 43, 117, 88),
+        ),
       ),
       child: Scaffold(
         appBar: AppBar(
@@ -144,85 +174,14 @@ class _NewFoodListScreenState extends State<NewFoodListScreen> {
             key: _formKey,
             child: Column(
               children: [
-                SizedBox(height: 10),
-                TextFormField(
-                  controller: tarihController,
-                  decoration: InputDecoration(
-                    labelText: 'Tarih',
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.calendar_today),
-                      onPressed: () => _selectDate(context),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Bu alan boş bırakılamaz';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 10),
-                TextFormField(
-                  controller: saatController,
-                  decoration: InputDecoration(
-                    labelText: 'Saat',
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.access_time),
-                      onPressed: () => _selectTime(context),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Bu alan boş bırakılamaz';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 10),
-                TextFormField(
-                  controller: food1Controller,
-                  decoration: InputDecoration(labelText: 'Yemek 1'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Bu alan boş bırakılamaz';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 10),
-                TextFormField(
-                  controller: food2Controller,
-                  decoration: InputDecoration(labelText: 'Yemek 2'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Bu alan boş bırakılamaz';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 10),
-                TextFormField(
-                  controller: food3Controller,
-                  decoration: InputDecoration(labelText: 'Yemek 3'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Bu alan boş bırakılamaz';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 10),
-                TextFormField(
-                  controller: food4Controller,
-                  decoration: InputDecoration(labelText: 'Yemek 4'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Bu alan boş bırakılamaz';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 20),
+                _buildTextField(tarihController, 'Tarih',
+                    onTap: () => _selectDate(context)),
+                _buildTextField(saatController, 'Saat',
+                    onTap: () => _selectTime(context)),
+                _buildTextField(food1Controller, 'Yemek 1'),
+                _buildTextField(food2Controller, 'Yemek 2'),
+                _buildTextField(food3Controller, 'Yemek 3'),
+                _buildTextField(food4Controller, 'Yemek 4'),
                 ElevatedButton(
                   onPressed: _saveFoodList,
                   child: Text('Kaydet'),
