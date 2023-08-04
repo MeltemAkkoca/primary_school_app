@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meditation_app/endofday_screen/endofday_screen.dart';
+import 'package:meditation_app/login_screen/login_screen.dart';
 import 'package:meditation_app/message_screen/message_form_screen.dart';
 import 'package:meditation_app/models/students.dart';
 import '../activities_screen/activities_screen.dart';
@@ -86,6 +87,20 @@ class _ParentHomeScreen extends State<ParentHomeScreen> {
                                     fontWeight: FontWeight.bold,
                                     fontSize: 30,
                                     color: Color.fromARGB(255, 244, 245, 244)),
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.logout,
+                              color: Color.fromARGB(255, 244, 245, 244),
+                            ),
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => LoginScreen(),
+                                ),
+                              );
+                            },
                           )
                         ],
                       ),
@@ -150,7 +165,8 @@ class _ParentHomeScreen extends State<ParentHomeScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const FormPage(),
+                                    builder: (context) => ParentChattingScreen(
+                                        parent: widget.parent),
                                   ),
                                 );
                               },
@@ -265,7 +281,9 @@ class _ParentHomeScreen extends State<ParentHomeScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const EndOfDay(),
+                                    builder: (context) => EndOfDay(
+                                        studentId:
+                                            studentId ?? 'DefaultStudentId'),
                                   ),
                                 );
                               },

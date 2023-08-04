@@ -58,22 +58,17 @@ class _NewEventScreenState extends State<NewEventScreen> {
       );
 
       if (widget.event != null) {
-        // Etkinlik güncelleme
         int result = await DatabaseHelper().updateEtkinlik(etkinlik);
         if (result != 0) {
-          // Güncelleme başarılı
-          DatabaseHelper().loadEtkinlikler(
-              widget.teacher.className); // Verileri yeniden yükle
+          DatabaseHelper().loadEtkinlikler(widget.teacher.className);
         } else {
-          // Güncelleme başarısız
           print("Güncelleme işlemi başarısız.");
         }
       } else {
-        // Yeni etkinlik ekleme
         DatabaseHelper().insertEtkinlik(etkinlik);
       }
 
-      Navigator.pop(context); // Etkinlikler sayfasına dön
+      Navigator.pop(context);
     }
   }
 
@@ -81,31 +76,36 @@ class _NewEventScreenState extends State<NewEventScreen> {
   Widget build(BuildContext context) {
     return Theme(
       data: ThemeData(
-        primaryColor: Color.fromARGB(255, 85, 120, 106),
+        primaryColor: Color.fromARGB(255, 43, 117, 88),
         colorScheme: ColorScheme.fromSwatch(
           primarySwatch: Colors.green,
-        ).copyWith(secondary: Color.fromARGB(255, 85, 120, 106)),
+        ).copyWith(
+          secondary: Color.fromARGB(255, 43, 117, 88),
+        ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            primary: Color.fromARGB(255, 85, 120, 106),
+            primary: Color.fromARGB(255, 43, 117, 88),
           ),
         ),
         inputDecorationTheme: InputDecorationTheme(
+          labelStyle: TextStyle(
+            color: Color.fromARGB(255, 43, 117, 88),
+          ),
           border: OutlineInputBorder(
             borderSide: BorderSide(
-              color: Color.fromARGB(255, 85, 120, 106),
+              color: Color.fromARGB(255, 43, 117, 88),
             ),
           ),
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: Color.fromARGB(255, 85, 120, 106),
+              color: Color.fromARGB(255, 43, 117, 88),
             ),
           ),
         ),
       ),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Color.fromARGB(255, 85, 120, 106),
+          backgroundColor: Color.fromARGB(255, 43, 117, 88),
           title: Text(widget.event != null
               ? 'Etkinliği Düzenle'
               : 'Yeni Etkinlik Ekle'),

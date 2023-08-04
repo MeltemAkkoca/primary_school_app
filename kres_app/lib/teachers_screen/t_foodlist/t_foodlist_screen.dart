@@ -34,7 +34,7 @@ class _TeacherFoodListScreenState extends State<TeacherFoodListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Yemek Listesi'),
-        backgroundColor: Color.fromARGB(255, 85, 120, 106),
+        backgroundColor: Color.fromARGB(255, 43, 117, 88),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -47,7 +47,7 @@ class _TeacherFoodListScreenState extends State<TeacherFoodListScreen> {
         },
         tooltip: 'Yeni Yemek Listesi Ekle',
         child: Icon(Icons.add, color: Colors.white),
-        backgroundColor: Color.fromARGB(255, 85, 120, 106),
+        backgroundColor: Color.fromARGB(255, 43, 117, 88),
       ),
       body: foodList.isEmpty
           ? Center(

@@ -1,5 +1,7 @@
 //import 'package:meditation_app/models/class.dart';
 import 'package:meditation_app/models/%C3%B6deme.dart';
+import 'package:meditation_app/models/end_of_day.dart';
+import 'package:meditation_app/models/message.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:io' as io;
@@ -31,7 +33,7 @@ class DatabaseHelper {
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, "theDb");
     var theDb = await openDatabase(path,
-        version: 15, onCreate: _onCreate, onUpgrade: _onUpgrade);
+        version: 12, onCreate: _onCreate, onUpgrade: _onUpgrade);
     return theDb;
   }
 
@@ -43,6 +45,8 @@ class DatabaseHelper {
     await theDb.execute('DROP TABLE IF EXISTS Etkinlikler');
     await theDb.execute('DROP TABLE IF EXISTS FoodList');
     await theDb.execute('DROP TABLE IF EXISTS Payment');
+    await theDb.execute('DROP TABLE IF EXISTS EndofDay');
+    await theDb.execute('DROP TABLE IF EXISTS Chatting');
 
     // Call _onCreate to recreate the tables
     _onCreate(theDb, newVersion);
@@ -63,7 +67,7 @@ class DatabaseHelper {
     //await theDb.execute("CREATE TABLE Class(className TEXT PRIMARY KEY)");
 
     await theDb.execute(
-        "CREATE TABLE Students(studentId TEXT PRIMARY KEY, studentFirstName TEXT, studentLastName TEXT, className TEXT)");
+        "CREATE TABLE Students(studentId TEXT PRIMARY KEY, studentFirstName TEXT, studentLastName TEXT, className TEXT, FOREIGN KEY(studentId) REFERENCES EndofDay(studentId))");
 
     await theDb.execute(
         "CREATE TABLE Parents(userId TEXT PRIMARY KEY, password TEXT, userName TEXT, userSurname TEXT, userRole TEXT, phoneNumber TEXT, studentId TEXT, FOREIGN KEY(studentId) REFERENCES Students(studentId))");
@@ -72,14 +76,19 @@ class DatabaseHelper {
     await theDb.execute(
         '''CREATE TABLE FoodList( id INTEGER PRIMARY KEY AUTOINCREMENT, className TEXT, tarih TEXT, saat Text, food1 TEXT, food2 TEXT,  food3 TEXT, food4 TEXT)''');
     await theDb.execute('''CREATE TABLE Payment(
-          decontNo TEXT PRIMARY KEY,
-          studentId TEXT,
-          payMonth TEXT,
-          payDate TEXT,
-          totalPay TEXT,
-          payStatus TEXT,
-          FOREIGN KEY(studentId) REFERENCES Students(studentId))''');
+  decontNo TEXT PRIMARY KEY,
+  studentId TEXT,
+  payMonth TEXT,
+  payDate TEXT,
+  totalPay TEXT,
+  payStatus TEXT,
+  FOREIGN KEY(studentId) REFERENCES Students(studentId))
+''');
 
+    await theDb.execute(
+        '''CREATE TABLE EndofDay( studentId TEXT PRIMARY KEY, className TEXT, breakfast TEXT, lunch TEXT, sleep TEXT,FOREIGN KEY(studentId) REFERENCES Students(studentId))''');
+    await theDb.execute(
+        '''CREATE TABLE Chatting( id INTEGER PRIMARY KEY AUTOINCREMENT, senderId TEXT, receiverId TEXT, text TEXT)''');
     var res = await theDb
         .rawQuery('SELECT name FROM sqlite_master WHERE type = "table"');
     print("Tables");
@@ -93,6 +102,7 @@ class DatabaseHelper {
         totalPay: "300 tl",
         payStatus: "Ödendi");
     await theDb.insert("Payment", pay1.toMap());
+
     var teacher1 = Teachers(
         userId: "37986278343",
         password: "password1",
@@ -119,22 +129,65 @@ class DatabaseHelper {
 
     var student1 = Students(
         studentId: "91235421056",
-        studentFirstName: "Melisa",
-        studentLastName: "Akyol",
+        studentFirstName: "Merve Nur",
+        studentLastName: "Ozan",
+        className: "Papatya");
+
+    var student2 = Students(
+        studentId: "56874275287",
+        studentFirstName: "Merter",
+        studentLastName: "Çoban",
+        className: "Papatya");
+
+    var student3 = Students(
+        studentId: "56712395445",
+        studentFirstName: "Meltem",
+        studentLastName: "Akkoca",
         className: "Papatya");
 
     await theDb.insert("Students", student1.toMap());
+    await theDb.insert("Students", student2.toMap());
+    await theDb.insert("Students", student3.toMap());
 
     var parent1 = Parents(
         userId: "4822319619336",
         password: "password2",
-        userName: "parent1",
-        userSurname: "surname2",
+        userName: "Hülya",
+        userSurname: "Ozan",
         userRole: "parent",
         phoneNumber: "1234567890",
         studentId: "91235421056");
 
+    var parent2 = Parents(
+        userId: "52568268384",
+        password: "p3",
+        userName: "Yunus",
+        userSurname: "Ozan",
+        userRole: "parent",
+        phoneNumber: "9876512897",
+        studentId: "91235421056");
+
+    var parent3 = Parents(
+        userId: "78945612378",
+        password: "p4",
+        userName: "Sezai",
+        userSurname: "Yerebakan",
+        userRole: "parent",
+        phoneNumber: "12547896634",
+        studentId: "56874275287");
+    var parent4 = Parents(
+        userId: "23981365434",
+        password: "p5",
+        userName: "Ahmet",
+        userSurname: "Akkoca",
+        userRole: "parent",
+        phoneNumber: "8573819783",
+        studentId: "56712395445");
+
     await theDb.insert("Parents", parent1.toMap());
+    await theDb.insert("Parents", parent2.toMap());
+    await theDb.insert("Parents", parent3.toMap());
+    await theDb.insert("Parents", parent4.toMap());
   }
 
   Future<User?> getUser(String userId, String password) async {
@@ -225,7 +278,7 @@ class DatabaseHelper {
       );
     } catch (error) {
       print("Güncelleme hatası: $error");
-      return 0; // Hata durumunda 0 dönebilirsiniz
+      return 0;
     }
   }
 
@@ -266,7 +319,7 @@ class DatabaseHelper {
       );
     } catch (error) {
       print("Güncelleme hatası: $error");
-      return 0; // Hata durumunda 0 dönebilirsiniz
+      return 0;
     }
   }
 
@@ -301,6 +354,127 @@ class DatabaseHelper {
     var dbClient = await theDb;
     List<Map> result = await dbClient.rawQuery(
         'SELECT S.studentId FROM Parents as P JOIN  Students as S ON P.studentId = S.studentId WHERE P.userId = ?',
+        [parent.userId]);
+
+    if (result.length > 0) {
+      return Students.fromMap(result.first as Map<String, dynamic>);
+    }
+
+    return null;
+  }
+
+  Future<int> insertendofDayStudent(EndofDay endofDay) async {
+    var dbClient = await theDb;
+    return await dbClient.insert('EndofDay', endofDay.toMap());
+  }
+
+  Future<List<EndofDay>> loadendofDayStudents(String className) async {
+    var dbClient = await theDb;
+    var result = await dbClient
+        .query('EndofDay', where: 'className = ?', whereArgs: [className]);
+    List<EndofDay> endofDay = result.map((e) => EndofDay.fromMap(e)).toList();
+    return endofDay;
+  }
+
+  Future<int> updateEndofDayStudent(EndofDay endofDay) async {
+    var dbClient = await theDb;
+    if (endofDay.studentId == "null") {
+      print("Id is NULL");
+    }
+    try {
+      return await dbClient.update(
+        'EndofDay',
+        endofDay.toMap(),
+        where: 'studentId = ?',
+        whereArgs: [endofDay.studentId],
+      );
+    } catch (error) {
+      print("Güncelleme hatasi: $error");
+      return 0;
+    }
+  }
+
+// Silme fonksiyonu
+  Future<int> deleteEndofDayStudent(String studentId) async {
+    var dbClient = await theDb;
+    return await dbClient.delete(
+      'endofDay',
+      where: 'studentId = ?',
+      whereArgs: [studentId],
+    );
+  }
+
+  Future<Students?> getStudent(String studentId) async {
+    var dbClient = await theDb;
+    List<Map> result = await dbClient
+        .rawQuery('SELECT * FROM Students WHERE studentId = ?', [studentId]);
+
+    if (result.isNotEmpty) {
+      return Students.fromMap(result.first as Map<String, dynamic>);
+    }
+    return null;
+  }
+
+  Future<EndofDay?> getEndofDay(String studentId) async {
+    var dbClient = await theDb;
+    List<Map> result = await dbClient
+        .rawQuery('SELECT * FROM EndofDay WHERE studentId = ?', [studentId]);
+
+    if (result.isNotEmpty) {
+      return EndofDay.fromMap(result.first as Map<String, dynamic>);
+    }
+    return null;
+  }
+
+  Future<List<Chatting>> getMessagesByUser(
+      String senderId, String receiverId) async {
+    var dbClient = await theDb;
+    List<Map> result = await dbClient.rawQuery(
+        'SELECT * FROM Chatting WHERE (senderId = ? AND receiverId= ?) OR (receiverId = ? AND senderId= ?)  ORDER BY id ASC',
+        [senderId, receiverId, senderId, receiverId]);
+    if (result.isNotEmpty) {
+      return result
+          .map((map) => Chatting.fromMap(map as Map<String, dynamic>))
+          .toList();
+    }
+    return [];
+  }
+
+  Future<int> insertMessages(Chatting chatting) async {
+    var dbClient = await theDb;
+    return await dbClient.insert('Chatting', chatting.toMap());
+  }
+
+  Future<List<Parents>> getParentsbyTeachers(Teachers teacher) async {
+    var dbClient = await theDb;
+    List<Map> results = await dbClient.rawQuery(
+        'SELECT Parents.* FROM Teachers JOIN Students ON Teachers.className = Students.className JOIN Parents ON Students.studentId = Parents.studentId WHERE Teachers.userId =?',
+        [teacher.userId]);
+
+    List<Parents> parentsList = results
+        .map((map) => Parents.fromMap(map as Map<String, dynamic>))
+        .toList();
+
+    return parentsList;
+  }
+
+  Future<Teachers?> getTeacherByParent(Parents parent) async {
+    var dbClient = await theDb;
+    List<Map> result = await dbClient.rawQuery(
+        'SELECT T.* FROM Parents as P JOIN Students as S ON P.studentId = S.studentId JOIN Teachers as T ON S.className = T.className WHERE P.userId = ?',
+        [parent.userId]);
+
+    if (result.length > 0) {
+      return Teachers.fromMap(result.first as Map<String, dynamic>);
+    }
+
+    return null;
+  }
+
+  Future<Students?> getStudentsbyParent(Parents parent) async {
+    var dbClient = await theDb;
+    List<Map> result = await dbClient.rawQuery(
+        'SELECT S.* FROM Parents as P JOIN  Students as S ON P.studentId = S.studentId WHERE P.userId = ?',
         [parent.userId]);
 
     if (result.length > 0) {

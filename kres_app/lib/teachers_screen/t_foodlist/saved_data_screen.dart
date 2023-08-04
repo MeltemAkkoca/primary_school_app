@@ -106,29 +106,29 @@ class _NewFoodListScreenState extends State<NewFoodListScreen> {
   Widget build(BuildContext context) {
     return Theme(
       data: ThemeData(
-        primaryColor: Color.fromARGB(255, 85, 120, 106),
-        hintColor: Color.fromARGB(255, 85, 120, 106),
+        primaryColor: Color.fromARGB(255, 43, 117, 88),
+        hintColor: Color.fromARGB(255, 43, 117, 88),
         colorScheme: ColorScheme.fromSwatch(
           primarySwatch: Colors.green,
         ).copyWith(
-          primary: Color.fromARGB(255, 85, 120, 106),
-          secondary: Color.fromARGB(255, 85, 120, 106),
+          primary: Color.fromARGB(255, 43, 117, 88),
+          secondary: Color.fromARGB(255, 43, 117, 88),
         ),
         inputDecorationTheme: InputDecorationTheme(
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: Color.fromARGB(255, 85, 120, 106),
+              color: Color.fromARGB(255, 43, 117, 88),
             ),
           ),
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: Color.fromARGB(255, 85, 120, 106),
+              color: Color.fromARGB(255, 43, 117, 88),
             ),
           ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            primary: Color.fromARGB(255, 85, 120, 106),
+            primary: Color.fromARGB(255, 43, 117, 88),
           ),
         ),
       ),

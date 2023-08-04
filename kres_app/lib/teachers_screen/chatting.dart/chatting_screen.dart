@@ -4,50 +4,42 @@ import 'package:meditation_app/models/user_authentication/database_helper.dart';
 import 'package:meditation_app/models/user_authentication/parents.dart';
 import 'package:meditation_app/models/user_authentication/teachers.dart';
 
-class ParentChattingScreen extends StatefulWidget {
+class ChattingScreen extends StatefulWidget {
+  final Teachers teacher;
   final Parents parent;
 
-  ParentChattingScreen({Key? key, required this.parent}) : super(key: key);
+  ChattingScreen({Key? key, required this.teacher, required this.parent})
+      : super(key: key);
 
   @override
-  _ParentChattingScreenState createState() => _ParentChattingScreenState();
+  _ChattingScreenState createState() => _ChattingScreenState();
 }
 
-class _ParentChattingScreenState extends State<ParentChattingScreen> {
+class _ChattingScreenState extends State<ChattingScreen> {
   List<Chatting> messages = [];
   final TextEditingController messageController = TextEditingController();
-  Teachers? teacher;
 
   @override
   void initState() {
     super.initState();
-    loadTeacherAndMessages();
-  }
-
-  Future<void> loadTeacherAndMessages() async {
-    teacher = await DatabaseHelper().getTeacherByParent(widget.parent);
     loadMessages();
   }
 
   void loadMessages() async {
-    if (teacher != null) {
-      messages = await DatabaseHelper()
-          .getMessagesByUser(widget.parent.userId, teacher!.userId);
-      setState(() {});
-    }
+    messages = await DatabaseHelper()
+        .getMessagesByUser(widget.teacher.userId, widget.parent.userId);
+    setState(() {});
   }
 
   void sendMessage() async {
-    if (teacher != null) {
-      var newMessage = Chatting(
-        senderId: widget.parent.userId,
-        receiverId: teacher!.userId,
-        text: messageController.text,
-      );
-      await DatabaseHelper().insertMessages(newMessage);
-      messageController.clear();
-      loadMessages();
-    }
+    var newMessage = Chatting(
+      senderId: widget.teacher.userId,
+      receiverId: widget.parent.userId,
+      text: messageController.text,
+    );
+    await DatabaseHelper().insertMessages(newMessage);
+    messageController.clear();
+    loadMessages();
   }
 
   @override
@@ -55,7 +47,7 @@ class _ParentChattingScreenState extends State<ParentChattingScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 43, 117, 88),
-        title: Text('${teacher?.userName} ${teacher?.userSurname}'),
+        title: Text('${widget.parent.userName} ${widget.parent.userSurname}'),
       ),
       body: Column(
         children: [
@@ -64,7 +56,7 @@ class _ParentChattingScreenState extends State<ParentChattingScreen> {
               itemCount: messages.length,
               itemBuilder: (context, index) {
                 final message = messages[index];
-                bool isSentByMe = message.senderId == widget.parent.userId;
+                bool isSentByMe = message.senderId == widget.teacher.userId;
 
                 return Container(
                   alignment:

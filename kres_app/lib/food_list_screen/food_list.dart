@@ -25,7 +25,7 @@ class FoodListScreen extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: Text('Yemek Listesi'),
-          backgroundColor: Color.fromARGB(255, 85, 120, 106),
+          backgroundColor: Color.fromARGB(255, 43, 117, 88),
         ),
         body: FutureBuilder<List<FoodList>>(
           future: DatabaseHelper().loadFoodList(studentClassName),
@@ -41,7 +41,7 @@ class FoodListScreen extends StatelessWidget {
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                          color: Color.fromARGB(255, 246, 246, 246),
+                          color: Color.fromARGB(255, 43, 117, 88),
                           borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(20),
                               topRight: Radius.circular(20))),

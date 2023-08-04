@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-//import 'package:meditation_app/fee_screen/fee_screen.dart';
+import 'package:meditation_app/login_screen/login_screen.dart';
 import 'package:meditation_app/message_screen/message_form_screen.dart';
 import 'package:meditation_app/models/user_authentication/teachers.dart';
+import 'package:meditation_app/teachers_screen/chatting.dart/chat_home.dart';
 import 'package:meditation_app/teachers_screen/t_activities/t_activities_screen.dart';
 import 'package:meditation_app/teachers_screen/t_foodlist/t_foodlist_screen.dart';
 import '../teachers_screen/t_endofday/t_endofday_screen.dart';
@@ -20,7 +21,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Column(children: [
-      //ekranı ikiye bölüyorum
       Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height / 3.8,
@@ -56,13 +56,26 @@ class _HomeScreenState extends State<HomeScreen> {
                                     fontWeight: FontWeight.bold,
                                     fontSize: 30,
                                     color: Color.fromARGB(255, 244, 245, 244)),
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.logout,
+                              color: Color.fromARGB(255, 244, 245, 244),
+                            ),
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => LoginScreen(),
+                                ),
+                              );
+                            },
                           )
                         ],
                       ),
                       SizedBox(
                         height: 20,
                       ),
-                      //if (User is Teachers)
                       Container(
                         width: 130,
                         height: 30,
@@ -81,364 +94,150 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(
-                    height: 20 / 6,
-                  ),
-                  // GestureDetector(
-                  //   child: CircleAvatar(
-                  //     minRadius: 50.0,
-                  //     maxRadius: 50.0,
-                  //     backgroundColor: Color.fromARGB(255, 246, 247, 245),
-                  //     backgroundImage: AssetImage('assets/girl_avatar.png'),
-                  //   ),
-                  // )
                 ],
               ),
             ],
           )),
       Expanded(
+        child: Container(
+          color: Color.fromARGB(255, 43, 117, 88),
           child: Container(
-              color: Color.fromARGB(255, 43, 117, 88),
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 230, 235, 233),
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(60),
-                        topRight: Radius.circular(60))),
-                child: ListView(
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+                color: Color.fromARGB(255, 230, 235, 233),
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(60),
+                    topRight: Radius.circular(60))),
+            child: ListView(
+              children: [
+                Column(
                   children: [
-                    Column(
+                    SizedBox(height: 50),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        //bosluk
-                        SizedBox(height: 50),
-                        //mesaj bırakma kısmı
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const FormPage(),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                width: MediaQuery.of(context).size.width / 1.1,
-                                height: MediaQuery.of(context).size.height / 12,
-                                padding: EdgeInsets.symmetric(),
-                                decoration: BoxDecoration(
-                                  color: Color.fromARGB(255, 171, 189, 176),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Container(
-                                  width: 100.0,
-                                  height: 100.0,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: Color.fromARGB(255, 171, 189, 176),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      ClipOval(
-                                        child: Image.asset(
-                                          'assets/notification.png',
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      SizedBox(width: 50.0),
-                                      Text(
-                                        'MESAJLAŞMA',
-                                        style: TextStyle(
-                                            fontSize: 28.0,
-                                            fontWeight: FontWeight.w400,
-                                            color: Color.fromARGB(
-                                                255, 10, 89, 37)),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
-                                  ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ChatHomePageScreen(
+                                  teacher: widget.teacher,
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        //bosluk
-
-                        SizedBox(height: 50),
-                        //aktiviteler kutusu
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        TeacherAssignmentScreen(
-                                            teacher: widget.teacher),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                width: MediaQuery.of(context).size.width / 1.1,
-                                height: MediaQuery.of(context).size.height / 12,
-                                padding: EdgeInsets.symmetric(),
-                                decoration: BoxDecoration(
-                                  color: Color.fromARGB(255, 43, 117, 88),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Container(
-                                  width: 100.0,
-                                  height: 100.0,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: Color.fromARGB(255, 171, 189, 176),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      ClipOval(
-                                        child: Image.asset(
-                                          'assets/activities.png',
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      SizedBox(width: 50.0),
-                                      Text(
-                                        'ETKİNLİKLER',
-                                        style: TextStyle(
-                                            fontSize: 28.0,
-                                            fontWeight: FontWeight.w400,
-                                            color: Color.fromARGB(
-                                                255, 10, 89, 37)),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 50),
-                        //gün sonu
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => TeacherEndOfDay(
-                                        teacher: widget.teacher),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                width: MediaQuery.of(context).size.width / 1.1,
-                                height: MediaQuery.of(context).size.height / 12,
-                                padding: EdgeInsets.symmetric(),
-                                decoration: BoxDecoration(
-                                  color: Color.fromARGB(255, 43, 117, 88),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Container(
-                                  width: 100.0,
-                                  height: 100.0,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: Color.fromARGB(255, 171, 189, 176),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      ClipOval(
-                                        child: Image.asset(
-                                          'assets/endofday.png',
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      SizedBox(width: 50.0),
-                                      Text(
-                                        'GÜN SONU',
-                                        style: TextStyle(
-                                            fontSize: 28.0,
-                                            fontWeight: FontWeight.w400,
-                                            color: Color.fromARGB(
-                                                255, 10, 89, 37)),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        //yemek listesi
-                        SizedBox(height: 50),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => TeacherFoodListScreen(
-                                        teacher: widget.teacher),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                width: MediaQuery.of(context).size.width / 1.1,
-                                height: MediaQuery.of(context).size.height / 12,
-                                padding: EdgeInsets.symmetric(),
-                                decoration: BoxDecoration(
-                                  color: Color.fromARGB(255, 43, 117, 88),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Container(
-                                  width: 100.0,
-                                  height: 100.0,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: Color.fromARGB(255, 171, 189, 176),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      ClipOval(
-                                        child: Image.asset(
-                                          'assets/messages.png',
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      SizedBox(width: 50.0),
-                                      Text(
-                                        'YEMEK LİSTESİ',
-                                        style: TextStyle(
-                                            fontSize: 28.0,
-                                            fontWeight: FontWeight.w400,
-                                            color: Color.fromARGB(
-                                                255, 10, 89, 37)),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            // Container(
-                            //   width: MediaQuery.of(context).size.width / 1.1,
-                            //   height: MediaQuery.of(context).size.height / 12,
-                            //   padding: EdgeInsets.symmetric(),
-                            //   decoration: BoxDecoration(
-                            //     color: Color.fromARGB(255, 43, 117, 88),
-                            //     borderRadius: BorderRadius.circular(20),
-                            //   ),
-                            //   child: GestureDetector(
-                            //     child: Container(
-                            //       width: 100.0,
-                            //       height: 100.0,
-                            //       decoration: BoxDecoration(
-                            //         // sshape: BoxShape.circle,
-                            //         borderRadius: BorderRadius.circular(20),
-                            //         color: Color.fromARGB(255, 171, 189, 176),
-                            //       ),
-                            //       child: Row(
-                            //         mainAxisAlignment: MainAxisAlignment.start,
-                            //         children: [
-                            //           ClipOval(
-                            //             child: Image.asset(
-                            //               'assets/messages.png',
-                            //               fit: BoxFit.cover,
-                            //             ),
-                            //           ),
-                            //           SizedBox(width: 50.0),
-                            //           Text(
-                            //             'YEMEK LİSTESİ',
-                            //             style: TextStyle(
-                            //                 fontSize: 28.0,
-                            //                 fontWeight: FontWeight.w400,
-                            //                 color: Color.fromARGB(
-                            //                     255, 10, 89, 37)),
-                            //             textAlign: TextAlign.center,
-                            //           ),
-                            //         ],
-                            //       ),
-                            //     ),
-                            //   ),
-                            // )
-                          ],
-                        ),
-                        SizedBox(height: 50),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        TeacherAssignmentScreen(
-                                            teacher: widget.teacher),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                width: MediaQuery.of(context).size.width / 1.1,
-                                height: MediaQuery.of(context).size.height / 12,
-                                padding: EdgeInsets.symmetric(),
-                                decoration: BoxDecoration(
-                                  color: Color.fromARGB(255, 43, 117, 88),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Container(
-                                  width: 100.0,
-                                  height: 100.0,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: Color.fromARGB(255, 171, 189, 176),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      ClipOval(
-                                        child: Image.asset(
-                                          'assets/payfee.png',
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      SizedBox(width: 50.0),
-                                      Text(
-                                        'ÖDEMELER',
-                                        style: TextStyle(
-                                            fontSize: 28.0,
-                                            fontWeight: FontWeight.w400,
-                                            color: Color.fromARGB(
-                                                255, 10, 89, 37)),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                            );
+                          },
+                          child: _buildContainer(
+                              'assets/notification.png', 'MESAJLAŞMA'),
                         ),
                       ],
-                    )
+                    ),
+                    SizedBox(height: 50),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TeacherAssignmentScreen(
+                                    teacher: widget.teacher),
+                              ),
+                            );
+                          },
+                          child: _buildContainer(
+                              'assets/activities.png', 'ETKİNLİKLER'),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 50),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TeacherEndofDayScreen(
+                                  teacher: widget.teacher,
+                                ),
+                              ),
+                            );
+                          },
+                          child: _buildContainer(
+                              'assets/endofday.png', 'GÜN SONU'),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 50),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TeacherFoodListScreen(
+                                    teacher: widget.teacher),
+                              ),
+                            );
+                          },
+                          child: _buildContainer(
+                              'assets/messages.png', 'YEMEK LİSTESİ'),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 50),
                   ],
                 ),
-              )))
+              ],
+            ),
+          ),
+        ),
+      )
     ]));
+  }
+
+  Container _buildContainer(String imagePath, String title) {
+    return Container(
+      width: MediaQuery.of(context).size.width / 1.1,
+      height: MediaQuery.of(context).size.height / 12,
+      padding: EdgeInsets.symmetric(),
+      decoration: BoxDecoration(
+        color: Color.fromARGB(255, 43, 117, 88),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Container(
+        width: 100.0,
+        height: 100.0,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Color.fromARGB(255, 171, 189, 176),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            ClipOval(
+              child: Image.asset(
+                imagePath,
+                fit: BoxFit.cover,
+              ),
+            ),
+            SizedBox(width: 50.0),
+            Text(
+              title,
+              style: TextStyle(
+                  fontSize: 28.0,
+                  fontWeight: FontWeight.w400,
+                  color: Color.fromARGB(255, 10, 89, 37)),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
